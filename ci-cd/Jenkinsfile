@@ -1,0 +1,120 @@
+pipeline {
+    agent {
+        label "gitlab-agent" // Dedicated Jenkins agent for CI/CD workloads
+    }
+    environment {
+        DOCKER_USER_NAME = "mordidocker"
+    }
+    stages {
+        stage("Environment validation") {
+            steps {
+                sh """
+                echo "Running on agent:"
+                pwd
+                whoami
+                """
+            }
+        }
+        stage("clone") {
+            steps {
+                git(
+                    url: "ssh://git@3.88.123.163:2222/Mordi_M/mordi-weather-app.git",
+                    branch: "main",
+                    credentialsId: "gitlab"
+                    )
+            }
+        }
+        stage("test2") {
+            steps {
+                sh """
+                pwd
+                ls -la
+                """
+            }
+        }
+        stage("pylint test") {
+            steps {
+                sh """
+                . ~/jenkins-venv/bin/activate 
+                pylint --fail-under=5 Weather_App/main.py
+                """
+            }
+        }
+        stage("docker-app-build") {
+            steps {
+                sh """
+                docker build -t mordi-weather:${BUILD_NUMBER} -f Weather_App/Dockerfile Weather_App
+                """
+            }
+        }
+        stage("start-image-test-reachability") {
+            steps {
+                sh """
+                docker run -d \
+                --name weather-reachability-test-${BUILD_NUMBER} \
+                -p 8000:8000 \
+                mordi-weather:${BUILD_NUMBER}
+                
+                sleep 5
+                
+                curl -f http://localhost:8000
+                
+                docker rm -f weather-reachability-test-${BUILD_NUMBER}
+                """
+            }
+        }
+        stage("image-push") {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "docker-hub-access",
+                        passwordVariable: "DOCKER_PASSWD",
+                        usernameVariable: "DOCKER_USER_NAME"
+                    )
+                ]) {
+                    sh '''
+                    echo "${DOCKER_PASSWD}" | docker login -u \
+                    "${DOCKER_USER_NAME}" --password-stdin
+                    
+                    docker tag mordi-weather:${BUILD_NUMBER} \
+                    ${DOCKER_USER_NAME}/mordi-weather:${BUILD_NUMBER}
+                    
+                    docker push ${DOCKER_USER_NAME}/mordi-weather:${BUILD_NUMBER}
+                    
+                    docker logout
+                    '''
+                }
+            }
+        }
+        stage("deploy") {
+            steps {
+                sshagent(credentials: ["weather-ssh"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ubuntu@172.31.64.118 '
+                        docker pull ${DOCKER_USER_NAME}/mordi-weather:${BUILD_NUMBER}
+                        docker rm -f weather || true
+                        docker run -d \
+                        --name weather \
+                        -p 80:8000 \
+                        ${DOCKER_USER_NAME}/mordi-weather:${BUILD_NUMBER}
+                        '
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            slackSend(
+                channel: "#succeeded-build",
+                message: "Build #${BUILD_NUMBER} succeeded on ${env.NODE_NAME}"
+            )
+        }
+        failure {
+            slackSend(
+                channel: "#devops-alerts",
+                message: "Build #${BUILD_NUMBER} failed. Check Jenkins logs."
+            )
+        }
+    }
+}
