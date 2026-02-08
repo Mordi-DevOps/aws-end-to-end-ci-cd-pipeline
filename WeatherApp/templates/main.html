@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <meta name="description" content="gets weather temperature and humidity by location">
+</head>
+<body style="margin: 0; min-height: 100vh; background: linear-gradient(135deg, #cfd9ff, #e2ebf0); display: flex; align-items: center; justify-content: center">
+<main style="background: white; padding: 2.5rem; border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.12); width: 100%; max-width: 420px; text-align: center;">
+    <form method="post">
+        <input type="text" name="city" placeholder="Enter a city" style="width: 100%; padding: 0.9rem 1.1rem; font-size: 1rem; border-radius 999px; border: 1px solid #ccc; outline: none; box-sizing: border-box; transition: border 0.2s, box-shadow 0.2s;" onfocus="this.style.border='1px solid #5b8cff'; this.style.boxShadow='0 0 0 3px rgba(91,140,255,0.2)'" onblur="this.style.border='1px solid #ccc'; this.style.boxShadow='none'" />
+        <button type="submit" style="margin-top: 1.2rem; font-size: 1rem; width: 100%;">Submit</button>
+    </form>
+	<button id="downloadBtn" style="margin-top: 1rem; font-size: 1rem; width: 100%; background-color: #5b8cff; color: white; border: none; padding: 0.9rem; border-radius: 999px; cursor: pointer; transition: background 0.2s;" 
+        onmouseover="this.style.backgroundColor='#4a76e0'" 
+        onmouseout="this.style.backgroundColor='#5b8cff'">
+        Download Sky Image
+    </button>
+{% if city %}
+    <h1>Weather for {{ city }} </h1>
+    	<table border="1">
+	   <th> Day </th>
+	   <th> Night Temperature </th>
+	   <th> Day Temperature </th>
+	   <th> Humidity </th>
+		{% for number in range(0, 7) %}
+<tr>
+      			<td>{{ number+1 }}</td>
+			<td>{{ min_temp[number] }}</td>
+			<td>{{ max_temp[number] }}</td>
+			<td>{{ humidity[number] }}</td>
+</tr>
+		{% endfor %}
+    	</table>
+
+{% endif %}
+</main>
+<script>
+document.getElementById('downloadBtn').onclick = function() {
+    // 1. Call Python API to get the secret S3 link
+    fetch('/generate-download-url')
+        .then(response => response.json())
+        .then(data => {
+            if (data.download_url) {
+                // 2. Trigger the download automatically
+                const link = document.createElement('a');
+                link.href = data.download_url;
+                link.setAttribute('download', 'sky_image.jpg'); 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("Error: Could not get download link.");
+            }
+        })
+        .catch(err => console.error("Fetch error:", err));
+};
+</script>
+</body>
+</html>
