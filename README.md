@@ -3,6 +3,8 @@
 
 This repository demonstrates a complete DevOps portfolio project showcasing an end-to-end CI/CD pipeline on AWS.
 
+Note: The CI/CD pipelines are configured to run on GitLab. This GitHub repository is for portfolio demonstration purposes.
+
 ## Overview
 - Jenkins CI/CD pipelines
 - Docker containerization
