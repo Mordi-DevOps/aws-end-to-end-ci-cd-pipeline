@@ -1,3 +1,7 @@
+// Jenkins declarative pipeline for end-to-end CI/CD on AWS
+// Source code is hosted on GitLab (production)
+// This file is published on GitHub for portfolio demonstration
+
 pipeline {
     agent {
         label "gitlab-agent" // Dedicated Jenkins agent for CI/CD workloads
