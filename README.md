@@ -1,57 +1,87 @@
-# End-to-End AWS CI/CD Pipeline Portfolio Project using Jenkins, Docker, and AWS services
+# AWS End-to-End CI/CD Pipeline — DevOps Portfolio Project
 
-This repository demonstrates a complete DevOps portfolio project showcasing an end-to-end CI/CD pipeline on AWS.
+This repository demonstrates the evolution of a production-grade CI/CD platform on AWS, progressing from a basic container deployment pipeline to a secure private architecture and finally to an on-demand, cost-optimized infrastructure model.
 
-Note: The CI/CD pipelines are configured to run on GitLab. This GitHub repository is for portfolio demonstration purposes.
-
-## Overview
-The system automates the build, containerization, and deployment of a Flask-based web application using a Jenkins-driven CI/CD pipeline on AWS infrastructure.
-
-## Architecture Flow
-
-1. Developer pushes code to GitLab repository
-2. Jenkins Controller triggers the CI/CD pipeline
-3. Jenkins Agent performs build and test stages
-4. Docker image is created
-5. Image is pushed to Docker Hub
-6. Web application is deployed to an AWS EC2 instance
-7. Slack notifications are sent on pipeline success/failure
+The project is structured into multiple architectural levels, each representing an upgrade in maturity, security posture, and automation capability.
 
 ---
 
-## Technologies Used
+## 📁 Repository Architecture Levels
 
-- Jenkins (CI/CD orchestration)
-- Docker (containerization)
-- AWS EC2 (infrastructure & deployment)
-- GitLab (source control)
-- Docker Hub (image registry)
-- Slack (pipeline notifications)
-- Flask (web application)
+| Level | Directory | Focus |
+|------|-------------|-------|
+| Level 1 | webapp | Foundational CI/CD pipeline |
+| Level 2 | webapp-upgrade-1 | Secure private AWS architecture |
+| Level 3 | webapp-upgrade-2 | On-demand infrastructure (planned) |
 
 ---
 
-## Repository Structure
+## 🧭 Architecture Evolution
 
-- **architecture/** – System design and architecture diagrams for AWS setup
-- **iac/** – Infrastructure as Code (planned Terraform implementation)
-- **ci-cd/** – Jenkins declarative pipeline configuration
-- **WeatherApp/** – Python-Flask web application source code
-- **docker/** – Docker build configuration
-- **screenshots/** – Pipeline and infrastructure proof
+### Level 1 — Functional Pipeline
+- Jenkins builds and deploys Dockerized app
+- Public EC2 deployment
+- SSH-based delivery
+
+### Level 2 — Production Security Upgrade
+- Private subnets
+- ALB public entrypoint
+- SSM deployment
+- No SSH / No EIPs
+
+### Level 3 — Cost Optimization (Planned)
+- Auto start/stop infrastructure
+- Scale-to-zero compute
+- Event-driven activation
 
 ---
-## Notes and Usage
 
-- CI/CD pipelines are configured to run from GitLab.
-- Jenkins pipelines can be triggered to deploy the application end-to-end
-- This GitHub repository serves as a public portfolio and documentation reference.
+## 🔧 Core Technologies
 
-## Future Enhancements (Roadmap)
+- Jenkins
+- Docker
+- AWS EC2 / VPC / ALB / SSM
+- GitLab
+- Docker Hub
+- Slack
+- Flask
 
-- Add VPC networking best practices: public/private subnets, Internet Gateway, and route tables
-- Introduce an Application Load Balancer (ALB) with Target Groups and health checks for multi-instance web app deployment
-- Provision infrastructure using Terraform (modules, remote state, and reusable components)
-- Introduce monitoring and observability with metrics, alerts, dashboards (e.g., Prometheus, Grafana)
-- Improve security posture (least privilege IAM roles, tighter security groups)
+---
+
+## 📊 Key DevOps Capabilities Demonstrated
+
+- CI/CD pipeline automation
+- Containerization
+- Secure VPC design
+- IAM least-privilege deployment
+- Webhook-driven builds
+- Private compute architecture
+- Load-balanced application routing
+
+---
+
+## 📐 Architecture Diagrams
+
+See:
+
+architecture/
+
+
+For visual system designs across project levels.
+
+---
+
+## 🧠 Engineering Focus
+
+This project emphasizes:
+
+- Security-first infrastructure
+- Automation over manual operations
+- Production-grade networking
+- Infrastructure evolution planning
+- Cost-aware architecture design
+
+---
+
+Each level directory contains its own detailed README explaining design decisions, implementation steps, and validation proof.
 
